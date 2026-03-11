@@ -12,6 +12,9 @@ export default function ProposalViewPage() {
   const [signing, setSigning] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [repricing, setRepricing] = useState(false);
+  const [repriceError, setRepriceError] = useState('');
+  const [repricedIndices, setRepricedIndices] = useState<Set<number>>(new Set());
 
   // Editable state — only used in draft mode
   const [editItems, setEditItems] = useState<LineItem[]>([]);
@@ -120,6 +123,58 @@ export default function ProposalViewPage() {
     if (res.ok) setProposal(await res.json());
   }
 
+  async function handleReprice() {
+    if (!proposal || editItems.length === 0) return;
+    setRepricing(true);
+    setRepriceError('');
+    setRepricedIndices(new Set());
+    try {
+      const res = await fetch('/api/reprice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scope: editScope,
+          items: editItems.map(({ desc, qty, rate }) => ({ desc, qty, rate })),
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'AI repricing failed');
+      }
+      const data = await res.json();
+      const aiItems: LineItem[] = data.items || [];
+
+      // Merge AI suggestions: match by index, keep original desc, update qty/rate/total
+      setEditItems(prev => {
+        const updated = prev.map((item, i) => {
+          if (i < aiItems.length) {
+            return {
+              desc: item.desc, // keep owner's description
+              qty: aiItems[i].qty,
+              rate: aiItems[i].rate,
+              total: Math.round(aiItems[i].qty * aiItems[i].rate * 100) / 100,
+            };
+          }
+          return item;
+        });
+        return updated;
+      });
+      // Mark which rows were updated
+      const indices = new Set<number>();
+      for (let i = 0; i < Math.min(editItems.length, aiItems.length); i++) {
+        indices.add(i);
+      }
+      setRepricedIndices(indices);
+      setDirty(true);
+      // Clear highlights after a few seconds
+      setTimeout(() => setRepricedIndices(new Set()), 4000);
+    } catch (err) {
+      setRepriceError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setRepricing(false);
+    }
+  }
+
   async function handleSign() {
     if (!proposal) return;
     setSigning(true);
@@ -176,7 +231,7 @@ export default function ProposalViewPage() {
   return (
     <div className="py-4">
       {/* Action bar */}
-      <div className="max-w-3xl mx-auto mb-4 flex items-center justify-between gap-3">
+      <div className="max-w-3xl mx-auto mb-4 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono px-2 py-1 rounded bg-yellow-warm/10 border border-yellow-warm/30 text-yellow-warm">
             DRAFT
@@ -184,8 +239,18 @@ export default function ProposalViewPage() {
           {saved && (
             <span className="text-xs font-mono text-green-forge animate-pulse">Saved</span>
           )}
+          {repriceError && (
+            <span className="text-xs font-mono text-red-hot">{repriceError}</span>
+          )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={handleReprice}
+            disabled={repricing || editItems.length === 0}
+            className="text-sm px-4 py-2 rounded-md font-mono bg-ember/15 border border-ember/30 text-ember hover:bg-ember/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {repricing ? 'AI Repricing...' : 'Re-run AI Pricing'}
+          </button>
           <button
             onClick={handleSave}
             disabled={!dirty || saving}
@@ -198,10 +263,23 @@ export default function ProposalViewPage() {
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
           <button onClick={handleSend} className="btn-rust text-sm">
-            Send to Client
+            Send to Customer
           </button>
         </div>
       </div>
+
+      {/* Repricing progress bar */}
+      {repricing && (
+        <div className="max-w-3xl mx-auto mb-4">
+          <div className="forge-card p-4 flex items-center gap-3">
+            <div className="w-5 h-5 border-2 border-ember border-t-transparent rounded-full animate-spin flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-text">AI is analyzing current market rates...</p>
+              <p className="text-xs text-text-dim font-mono mt-0.5">Quantities and rates will update. You can still edit after.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-3xl mx-auto">
         {/* Header */}
@@ -272,12 +350,17 @@ export default function ProposalViewPage() {
 
           {editItems.map((item, i) => {
             const isEditing = editingIndex === i;
+            const wasRepriced = repricedIndices.has(i);
             return (
               <div
                 key={i}
                 onClick={() => setEditingIndex(i)}
-                className={`grid grid-cols-1 sm:grid-cols-[1fr_70px_90px_100px_36px] gap-2 py-2 border-b border-border/50 items-center cursor-pointer transition-colors ${
-                  isEditing ? 'bg-surface2/50 -mx-2 px-2 rounded-md' : 'hover:bg-surface2/30'
+                className={`grid grid-cols-1 sm:grid-cols-[1fr_70px_90px_100px_36px] gap-2 py-2 border-b border-border/50 items-center cursor-pointer transition-all ${
+                  isEditing
+                    ? 'bg-surface2/50 -mx-2 px-2 rounded-md'
+                    : wasRepriced
+                    ? 'bg-ember/5 -mx-2 px-2 rounded-md border-l-2 border-l-ember'
+                    : 'hover:bg-surface2/30'
                 }`}
               >
                 {isEditing ? (
@@ -373,9 +456,16 @@ export default function ProposalViewPage() {
         </div>
 
         {/* Bottom bar */}
-        <div className="bg-surface2 border border-border rounded-b-lg p-6 sm:p-8 flex items-center justify-between">
+        <div className="bg-surface2 border border-border rounded-b-lg p-6 sm:p-8 flex items-center justify-between flex-wrap gap-3">
           <p className="text-xs font-mono text-text-dim">Click any line item to edit</p>
           <div className="flex gap-2">
+            <button
+              onClick={handleReprice}
+              disabled={repricing || editItems.length === 0}
+              className="text-sm px-4 py-2 rounded-md font-mono bg-ember/15 border border-ember/30 text-ember hover:bg-ember/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {repricing ? 'Repricing...' : 'Re-run AI Pricing'}
+            </button>
             <button
               onClick={handleSave}
               disabled={!dirty || saving}
