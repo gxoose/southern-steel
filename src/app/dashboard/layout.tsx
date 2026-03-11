@@ -1,4 +1,5 @@
 import TopNav from '@/components/TopNav';
+import ChatBubble from '@/components/ChatBubble';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {children}
       </main>
+      <ChatBubble />
     </div>
   );
 }

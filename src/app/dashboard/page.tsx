@@ -95,19 +95,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Chatbot Status */}
-          <div className="forge-card p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-2 h-2 rounded-full bg-green-forge" />
-              <span className="text-sm font-mono text-text">Chatbot Status</span>
-            </div>
-            <p className="text-xs text-text-sec">
-              Live and qualifying leads on your website. Embed with:
-            </p>
-            <code className="block mt-2 text-xs font-mono text-ember bg-surface3 p-2 rounded break-all">
-              {'<script src="https://southern-steel.vercel.app/widget.js"></script>'}
-            </code>
-          </div>
         </div>
       </div>
     </div>
