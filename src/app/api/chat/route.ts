@@ -17,6 +17,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
+    // Reject photos larger than 5MB
+    if (parsed.data.photo.length > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File too large' }, { status: 413 });
+    }
+
     // Extract base64 data and media type from data URL
     const match = parsed.data.photo.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
     if (!match) {

@@ -63,6 +63,14 @@ export async function POST(req: NextRequest) {
     }
     const { client_name, client_phone, client_email, notes, job_type, photos } = parsed.data;
 
+    // Enforce photo size limits
+    if (photos && photos.length > 10) {
+      return NextResponse.json({ error: 'Too many photos' }, { status: 400 });
+    }
+    if (photos?.some((p: string) => p.length > 5 * 1024 * 1024)) {
+      return NextResponse.json({ error: 'File too large' }, { status: 413 });
+    }
+
     const startTime = Date.now();
     const proposalTimestamp = Date.now().toString(36);
 
