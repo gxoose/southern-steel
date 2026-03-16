@@ -14,13 +14,13 @@ export default function PublicProposalPage() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`/api/proposals/${params.id}`);
+        const res = await fetch(`/api/public/proposals/${params.id}`);
         if (res.ok) {
           const data = await res.json();
           setProposal(data);
           // Mark as viewed
           if (data.status === 'sent') {
-            fetch(`/api/proposals/${params.id}`, {
+            fetch(`/api/public/proposals/${params.id}`, {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ status: 'viewed' }),
@@ -40,7 +40,7 @@ export default function PublicProposalPage() {
     if (!proposal) return;
     setSigning(true);
     try {
-      const res = await fetch(`/api/proposals/${proposal.id}/sign`, {
+      const res = await fetch(`/api/public/proposals/${proposal.id}/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ signed_by: proposal.client_name }),
