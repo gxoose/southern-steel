@@ -1,4 +1,5 @@
-CREATE INDEX IF NOT EXISTS idx_leads_score_tier ON leads(score_tier);
+CREATE INDEX IF NOT EXISTS idx_leads_score ON leads(score DESC);
+CREATE INDEX IF NOT EXISTS idx_leads_tier ON leads(tier);
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
 CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_proposals_status ON proposals(status);
