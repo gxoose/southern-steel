@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAnon } from '@/lib/supabase';
+import { ProposalSignSchema } from '@/lib/schemas';
 
 // Public signing endpoint — customers can sign proposals sent to them
 export async function POST(
@@ -8,13 +9,17 @@ export async function POST(
 ) {
   const { id } = await params;
   const body = await req.json();
+  const parsed = ProposalSignSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
 
   const { data, error } = await supabaseAnon
     .from('proposals')
     .update({
       status: 'signed',
       signed_at: new Date().toISOString(),
-      signed_by: body.signed_by || 'Client',
+      signed_by: parsed.data.signed_by || 'Client',
     })
     .eq('id', id)
     .select()

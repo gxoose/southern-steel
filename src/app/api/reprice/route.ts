@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { RepriceSchema } from '@/lib/schemas';
 
 export async function POST(req: NextRequest) {
   try {
-    const { scope, items } = await req.json();
-
-    if (!items || items.length === 0) {
-      return NextResponse.json({ error: 'No line items provided' }, { status: 400 });
+    const body = await req.json();
+    const parsed = RepriceSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
+    const { scope, items } = parsed.data;
 
     const anthropic = new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY,
@@ -41,8 +43,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 });
     }
 
-    const parsed = JSON.parse(jsonMatch[0]);
-    const updatedItems = (parsed.items || parsed.line_items || []).map(
+    const aiResult = JSON.parse(jsonMatch[0]);
+    const updatedItems = (aiResult.items || aiResult.line_items || []).map(
       (item: { desc?: string; description?: string; qty: number; rate: number; total?: number }) => ({
         desc: item.desc || item.description || '',
         qty: item.qty,

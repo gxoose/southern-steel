@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
+import { GenerateProposalSchema } from '@/lib/schemas';
 
 const SYSTEM_PROMPT = `You are a professional welding and fabrication estimator in San Antonio TX. Given the job description and photos, generate an itemized proposal. Include materials, labor hours at $75/hr, surface prep, finishing, and mobilization. Use realistic 2026 San Antonio market rates. Respond in JSON format: {"items": [{"desc": "string", "qty": number, "rate": number, "total": number}], "notes": "string"}. Respond ONLY with valid JSON — no markdown, no code fences, no extra text.`;
 
@@ -49,11 +50,11 @@ async function uploadPhotoToStorage(
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { client_name, client_phone, client_email, notes, job_type, photos } = body;
-
-    if (!client_name || !notes) {
-      return NextResponse.json({ error: 'Client name and notes are required' }, { status: 400 });
+    const parsed = GenerateProposalSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
+    const { client_name, client_phone, client_email, notes, job_type, photos } = parsed.data;
 
     const startTime = Date.now();
     const proposalTimestamp = Date.now().toString(36);
@@ -132,17 +133,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 });
     }
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    const aiResult = JSON.parse(jsonMatch[0]);
 
     // Support both formats: {items: [...]} and {line_items: [...]}
-    const rawItems = parsed.items || parsed.line_items || [];
+    const rawItems = aiResult.items || aiResult.line_items || [];
     const lineItems = rawItems.map((item: { desc?: string; description?: string; qty: number; rate: number; total: number }) => ({
       desc: item.desc || item.description || '',
       qty: item.qty,
       rate: item.rate,
       total: item.total,
     }));
-    const scopeOfWork = parsed.notes || parsed.scope_of_work || notes;
+    const scopeOfWork = aiResult.notes || aiResult.scope_of_work || notes;
 
     const subtotal = lineItems.reduce((sum: number, item: { total: number }) => sum + item.total, 0);
     const taxRate = 0.0825;

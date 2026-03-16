@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAnon } from '@/lib/supabase';
+import { PublicProposalPatchSchema } from '@/lib/schemas';
 
 // Public read — RLS enforces only sent/signed proposals are visible
 export async function GET(
@@ -27,10 +28,9 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = await req.json();
-
-  // Only allow marking as viewed
-  if (body.status !== 'viewed') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const parsed = PublicProposalPatchSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
   const { data, error } = await supabaseAnon

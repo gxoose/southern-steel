@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { ChatPhotoSchema } from '@/lib/schemas';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
-    if (!body.photo) {
-      return NextResponse.json({ error: 'No photo provided' }, { status: 400 });
+    const parsed = ChatPhotoSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
     // Extract base64 data and media type from data URL
-    const match = body.photo.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
+    const match = parsed.data.photo.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
     if (!match) {
       return NextResponse.json({ error: 'Invalid image format' }, { status: 400 });
     }

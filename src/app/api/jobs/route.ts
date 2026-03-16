@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { JobSchema } from '@/lib/schemas';
 
 export async function GET() {
   const { data, error } = await supabase
@@ -16,6 +17,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const body = await req.json();
+    const parsed = JobSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
     const {
       id,
       proposal_id,
@@ -28,7 +34,7 @@ export async function POST(req: NextRequest) {
       start_date,
       due_date,
       notes,
-    } = await req.json();
+    } = parsed.data;
 
     // Update existing job
     if (id) {
