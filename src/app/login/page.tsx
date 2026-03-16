@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createBrowserClient } from '@supabase/ssr';
+import { getAuthClient } from '@/lib/supabase-browser';
 
 function LoginForm() {
   const router = useRouter();
@@ -17,10 +17,7 @@ function LoginForm() {
     setError('');
     setLoading(true);
 
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getAuthClient();
 
     const { error: authError } = await supabase.auth.signInWithPassword({
       email,

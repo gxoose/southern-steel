@@ -10,7 +10,7 @@ function getServiceClient(): SupabaseClient {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   // Fall back to anon key if service role key isn't set yet
-  const key = serviceKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const key = serviceKey || process.env.SUPABASE_ANON_KEY;
 
   if (!url || !key || url === 'your_supabase_url_here') {
     return createClient('https://placeholder.supabase.co', 'placeholder-key');
@@ -40,7 +40,7 @@ function getAnonClient(): SupabaseClient {
   if (_supabaseAnon) return _supabaseAnon;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const key = process.env.SUPABASE_ANON_KEY;
 
   if (!url || !key || url === 'your_supabase_url_here') {
     return createClient('https://placeholder.supabase.co', 'placeholder-key');

@@ -2,17 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createBrowserClient } from '@supabase/ssr';
+import { getAuthClient } from '@/lib/supabase-browser';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getAuthClient();
 
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {

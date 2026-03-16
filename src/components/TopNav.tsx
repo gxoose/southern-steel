@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { createBrowserClient } from '@supabase/ssr';
+import { getAuthClient } from '@/lib/supabase-browser';
 
 const tabs = [
   { label: 'Dashboard', href: '/dashboard' },
@@ -15,10 +15,7 @@ export default function TopNav() {
   const router = useRouter();
 
   async function handleLogout() {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getAuthClient();
     await supabase.auth.signOut();
     router.push('/login');
     router.refresh();
