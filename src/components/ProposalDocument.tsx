@@ -129,10 +129,21 @@ export default function ProposalDocument({
 
       {proposal.status === 'signed' && (
         <div className="bg-surface2 border border-border rounded-b-lg p-6 sm:p-8 text-center">
-          <div className="text-green-forge font-display text-lg mb-2">Signed & Approved</div>
+          <div className="flex items-center justify-center gap-2 text-green-forge font-display text-lg mb-2">
+            <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+            </svg>
+            Signed &amp; Approved
+          </div>
           <p className="text-xs font-mono text-text-dim">
             Signed by {proposal.signed_by} on{' '}
-            {proposal.signed_at && new Date(proposal.signed_at).toLocaleDateString()}
+            {proposal.signed_at && new Date(proposal.signed_at).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+            })}
           </p>
           <div className="flex gap-3 mt-4 justify-center">
             <button className="btn-outline text-sm">Download PDF</button>

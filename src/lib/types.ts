@@ -44,6 +44,8 @@ export interface Proposal {
   status: string;
   signed_at: string | null;
   signed_by: string | null;
+  signed_ip: string | null;
+  signature_hash: string | null;
   ai_generated: boolean;
   generation_time_seconds: number | null;
   created_at: string;
