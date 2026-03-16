@@ -287,10 +287,10 @@ export default function ProposalViewPage() {
           <div className="flex items-start justify-between">
             <div>
               <h1 className="font-display text-2xl sm:text-3xl">
-                <span className="text-text">Southern</span>{' '}
-                <span className="text-rust">Steel</span>
+                <span className="text-text">VantaPoint</span>{' '}
+                <span className="text-rust">Forge</span>
               </h1>
-              <p className="text-sm text-text-sec mt-1">Welding & Fabrication</p>
+              <p className="text-sm text-text-sec mt-1">AI for Welding & Fabrication</p>
               <p className="text-xs font-mono text-text-dim mt-1">San Antonio, TX</p>
             </div>
             <div className="text-right">

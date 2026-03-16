@@ -66,7 +66,7 @@ export default function ChatWidget() {
   // Initial greeting on mount
   useEffect(() => {
     addBotMessage(
-      "Hey there! Welcome to Southern Steel — San Antonio's go-to for welding and metal fabrication. What kind of project can we help you with?",
+      "Hey there! Welcome to VantaPoint Forge — San Antonio's go-to for welding and metal fabrication. What kind of project can we help you with?",
       700
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -255,7 +255,7 @@ export default function ChatWidget() {
         ...prev,
         {
           role: 'bot',
-          text: `All set, ${finalName}! Your request has been submitted and our team is on it. ${followUp}\n\nThanks for choosing Southern Steel — we appreciate your business.`,
+          text: `All set, ${finalName}! Your request has been submitted and our team is on it. ${followUp}\n\nThanks for choosing VantaPoint Forge — we appreciate your business.`,
         },
       ]);
     } catch {
@@ -266,7 +266,7 @@ export default function ChatWidget() {
         ...prev,
         {
           role: 'bot',
-          text: `Thanks, ${finalName}! We've got your info. Someone from our team will give you a call soon. Appreciate you reaching out to Southern Steel!`,
+          text: `Thanks, ${finalName}! We've got your info. Someone from our team will give you a call soon. Appreciate you reaching out to VantaPoint Forge!`,
         },
       ]);
     }
@@ -297,8 +297,8 @@ export default function ChatWidget() {
         </div>
         <div className="flex-1">
           <h1 className="font-display text-base leading-tight">
-            <span className="text-text">Southern</span>{' '}
-            <span className="text-rust">Steel</span>
+            <span className="text-text">VantaPoint</span>{' '}
+            <span className="text-rust">Forge</span>
           </h1>
           <p className="text-[11px] font-mono text-green-forge flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-green-forge inline-block animate-pulse" />
@@ -314,7 +314,7 @@ export default function ChatWidget() {
             {/* Bot avatar */}
             {msg.role === 'bot' && (
               <div className="w-7 h-7 rounded-full bg-surface2 border border-border flex items-center justify-center flex-shrink-0 mt-1">
-                <span className="text-rust text-[10px] font-bold font-mono">SS</span>
+                <span className="text-rust text-[10px] font-bold font-mono">VF</span>
               </div>
             )}
 

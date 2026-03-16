@@ -18,7 +18,7 @@ export default function ChatBubble() {
         <div className="fixed z-50 top-1/2 right-[100px] -translate-y-1/2 w-[400px] h-[600px] max-w-[calc(100vw-6rem)] max-h-[calc(100dvh-4rem)] flex flex-col rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-border">
           {/* Modal close bar */}
           <div className="flex items-center justify-between bg-surface2 border-b border-border px-4 py-2 flex-shrink-0">
-            <span className="text-xs font-mono text-text-sec">Southern Steel Chat</span>
+            <span className="text-xs font-mono text-text-sec">VantaPoint Forge Chat</span>
             <button
               onClick={() => setOpen(false)}
               className="w-7 h-7 rounded-full bg-surface3 border border-border flex items-center justify-center text-text-sec hover:text-white hover:bg-red-hot transition-colors"
@@ -32,7 +32,7 @@ export default function ChatBubble() {
           <iframe
             src="/widget/chat"
             className="flex-1 w-full bg-bg"
-            title="Southern Steel Chat"
+            title="VantaPoint Forge Chat"
           />
         </div>
       )}

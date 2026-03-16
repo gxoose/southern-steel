@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
             },
             {
               type: 'text',
-              text: "You're a friendly welding and metal fabrication expert at Southern Steel in San Antonio, TX. A potential customer just sent this photo through our chat widget. In 1-2 short, conversational sentences, describe what you see — the type of metalwork, condition, what might need to be done. Be specific about the metal/welding aspects but keep it approachable. Don't use markdown, bullet points, or emojis.",
+              text: "You're a friendly welding and metal fabrication expert at VantaPoint Forge in San Antonio, TX. A potential customer just sent this photo through our chat widget. In 1-2 short, conversational sentences, describe what you see — the type of metalwork, condition, what might need to be done. Be specific about the metal/welding aspects but keep it approachable. Don't use markdown, bullet points, or emojis.",
             },
           ],
         },

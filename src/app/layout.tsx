@@ -22,7 +22,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Southern Steel — Welding & Fabrication",
+  title: "VantaPoint Forge — AI for Welding & Fabrication",
   description: "AI-powered welding business management platform",
 };
 
