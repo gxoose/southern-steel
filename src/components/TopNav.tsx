@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { createBrowserClient } from '@supabase/ssr';
 
 const tabs = [
   { label: 'Dashboard', href: '/dashboard' },
@@ -11,6 +12,17 @@ const tabs = [
 
 export default function TopNav() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleLogout() {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  }
 
   return (
     <nav className="border-b border-border bg-surface sticky top-0 z-50">
@@ -50,6 +62,12 @@ export default function TopNav() {
           >
             <span>+</span> New Proposal
           </Link>
+          <button
+            onClick={handleLogout}
+            className="text-xs font-mono text-text-dim hover:text-red-hot transition-colors"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </nav>
