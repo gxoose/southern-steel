@@ -24,11 +24,19 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const body = await req.json();
+  const { status, notes, estimated_value } = await req.json();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateData: Record<string, any> = {
+    updated_at: new Date().toISOString(),
+  };
+  if (status !== undefined) updateData.status = status;
+  if (notes !== undefined) updateData.notes = notes;
+  if (estimated_value !== undefined) updateData.estimated_value = estimated_value;
 
   const { data, error } = await supabase
     .from('leads')
-    .update({ ...body, updated_at: new Date().toISOString() })
+    .update(updateData)
     .eq('id', id)
     .select()
     .single();
