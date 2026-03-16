@@ -38,13 +38,12 @@ export async function POST(req: NextRequest) {
 
     // Update existing job
     if (id) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const updateData: Record<string, any> = {};
+      const updateData: Record<string, string | number | null> = {};
       if (status !== undefined) updateData.status = status;
-      if (notes !== undefined) updateData.notes = notes;
+      if (notes !== undefined) updateData.notes = notes ?? null;
       if (progress !== undefined) updateData.progress = progress;
-      if (start_date !== undefined) updateData.start_date = start_date;
-      if (due_date !== undefined) updateData.due_date = due_date;
+      if (start_date !== undefined) updateData.start_date = start_date ?? null;
+      if (due_date !== undefined) updateData.due_date = due_date ?? null;
       if (status === 'completed') updateData.completed_at = new Date().toISOString();
 
       const { data, error } = await supabase

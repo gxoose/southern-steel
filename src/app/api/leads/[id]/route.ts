@@ -32,13 +32,12 @@ export async function PATCH(
   }
   const { status, notes, estimated_value } = parsed.data;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const updateData: Record<string, any> = {
+  const updateData: Record<string, string | number | null> = {
     updated_at: new Date().toISOString(),
   };
   if (status !== undefined) updateData.status = status;
-  if (notes !== undefined) updateData.notes = notes;
-  if (estimated_value !== undefined) updateData.estimated_value = estimated_value;
+  if (notes !== undefined) updateData.notes = notes ?? null;
+  if (estimated_value !== undefined) updateData.estimated_value = estimated_value ?? null;
 
   const { data, error } = await supabase
     .from('leads')

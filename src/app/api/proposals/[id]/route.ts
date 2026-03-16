@@ -33,8 +33,7 @@ export async function PATCH(
   const { status, line_items, scope_of_work, subtotal, tax, total, signed_by, signed_at } =
     parsed.data;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const updateData: Record<string, any> = {};
+  const updateData: Record<string, string | number | object | null> = {};
   if (status !== undefined) updateData.status = status;
   if (line_items !== undefined) updateData.line_items = line_items;
   if (scope_of_work !== undefined) updateData.scope_of_work = scope_of_work;
