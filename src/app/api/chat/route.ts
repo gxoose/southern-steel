@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { ChatPhotoSchema } from '@/lib/schemas';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for') ?? 'unknown';
+  const { limited } = await checkRateLimit(`chat:${ip}`, 30, 1);
+  if (limited) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
     const parsed = ChatPhotoSchema.safeParse(body);

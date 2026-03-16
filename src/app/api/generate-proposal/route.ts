@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
 import { GenerateProposalSchema } from '@/lib/schemas';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 const SYSTEM_PROMPT = `You are a professional welding and fabrication estimator in San Antonio TX. Given the job description and photos, generate an itemized proposal. Include materials, labor hours at $75/hr, surface prep, finishing, and mobilization. Use realistic 2026 San Antonio market rates. Respond in JSON format: {"items": [{"desc": "string", "qty": number, "rate": number, "total": number}], "notes": "string"}. Respond ONLY with valid JSON — no markdown, no code fences, no extra text.`;
 
@@ -48,6 +49,12 @@ async function uploadPhotoToStorage(
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for') ?? 'unknown';
+  const { limited } = await checkRateLimit(`generate-proposal:${ip}`, 10, 60);
+  if (limited) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
     const parsed = GenerateProposalSchema.safeParse(body);
