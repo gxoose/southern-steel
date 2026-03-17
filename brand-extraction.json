@@ -1,0 +1,81 @@
+{
+  "source": "https://www.23gradicoffee.com",
+  "scrapedAt": "2026-03-17",
+  "brandDNA": {
+    "designLanguage": "Editorial scroll, luxury single-page experience with numbered sections",
+    "structure": {
+      "sections": [
+        { "number": "001", "label": "Stagionalita'", "type": "hero-intro", "description": "Full-bleed hero with bold keywords (Stagionale, Spontaneo, Tracciabile), product imagery, scrolling marquee text, value cards (01 Purezza, 02 Sostenibilità, 03 Tracciabilità)" },
+        { "number": "002", "label": "Monorigini", "type": "product-catalog", "description": "Interactive product slider with per-item accent colors, detail cards with specs (origin, altitude, variety, process), image gallery" },
+        { "number": "003", "label": "Cosa ci guida", "type": "faq-accordion", "description": "6 expandable Q&A items about philosophy and process, numbered 01-06" },
+        { "number": "004", "label": "Storia", "type": "story-chapters", "description": "4 chapters with image slider, brand history narrative" }
+      ],
+      "navigation": "Minimal top nav with hamburger menu revealing full-screen overlay with decorative illustration",
+      "footer": "Full-bleed background image, contact info, social links, legal"
+    },
+    "typography": {
+      "approach": "Serif display headings with sans-serif body — editorial magazine feel",
+      "sectionNumbers": "Large, light-weight display numbers (001, 002, 003, 004) as decorative anchors",
+      "heroKeywords": "Oversized single-word lines stacked vertically",
+      "bodyText": "Clean sans-serif, generous line-height"
+    },
+    "colorPalette": {
+      "backgrounds": {
+        "primary": "#FFFFFF",
+        "secondary": "#f4f4f4",
+        "tertiary": "#EDEDED",
+        "dark": "#133250",
+        "text-dark": "#212121"
+      },
+      "accents": {
+        "costaRica": "#af99bd",
+        "colombia": "#da9ca3",
+        "nicaragua": "#caae69",
+        "messico": "#a9ae75",
+        "ethiopia": "#eb9754",
+        "bolivia": "#cf654e",
+        "peru": "#7fb2ac",
+        "kenya": "#f1c749",
+        "rwanda": "#9daf91",
+        "elSalvador": "#a6b9d4"
+      },
+      "ui": {
+        "border": "#ebebeb",
+        "decorative": "rgb(208, 213, 210)"
+      }
+    },
+    "animations": {
+      "marquee": "Horizontal infinite scroll text marquee with keywords",
+      "productSlider": "Smooth horizontal carousel with pagination dots matching accent colors",
+      "imageGallery": "Fade transitions between images",
+      "sectionReveal": "Scroll-triggered section entrances"
+    },
+    "layoutPatterns": {
+      "numberedSections": "3-digit zero-padded numbers (001-004) as section identifiers",
+      "valueCards": "Numbered 01-03 cards with icon + short description",
+      "productCards": "Image + title + tags (Grani, Moka, Espresso, Filtro) + CTA",
+      "faqAccordion": "Numbered 01-06 expandable items",
+      "imageSliders": "Full-width with decorative elements"
+    }
+  },
+  "adaptation": {
+    "target": "808 GXOOSE — Dark trap/808 beat producer website",
+    "colorMapping": {
+      "background": "#0a0a0a",
+      "surface": "#111111",
+      "surface2": "#1a1a1a",
+      "accent": "#8b5cf6",
+      "accentAlt": "#f43f5e",
+      "gold": "#d4a024",
+      "text": "#e5e5e5",
+      "textSecondary": "#737373",
+      "textDim": "#525252"
+    },
+    "sectionMapping": {
+      "001": { "original": "Stagionalita'", "adapted": "BEATS — Hero with bold producer name, animated waveform, genre tags" },
+      "002": { "original": "Monorigini", "adapted": "CATALOG — Beat catalog with audio players, BPM/key info, pricing" },
+      "003": { "original": "Cosa ci guida", "adapted": "ABOUT — Producer story, equipment, style" },
+      "004": { "original": "Storia", "adapted": "CONTACT — Licensing info, booking, social links" }
+    }
+  }
+}

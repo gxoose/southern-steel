@@ -1,29 +1,52 @@
 import type { Metadata } from "next";
-import { Playfair_Display, DM_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const inter = Inter({
+  variable: "--font-body",
   subsets: ["latin"],
   display: "swap",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "700"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "VantaPoint Forge — AI for Welding & Fabrication",
-  description: "AI-powered welding business management platform",
+  title: "808 GXOOSE — Premium Beats & Production",
+  description:
+    "Dark trap, 808-heavy beats from 808 GXOOSE. Browse, preview, and license exclusive instrumentals for your next project.",
+  keywords: [
+    "beats",
+    "trap beats",
+    "808",
+    "beat producer",
+    "instrumentals",
+    "buy beats",
+    "hip hop beats",
+    "dark trap",
+  ],
+  openGraph: {
+    title: "808 GXOOSE — Premium Beats & Production",
+    description:
+      "Dark trap, 808-heavy beats. Browse, preview, and license exclusive instrumentals.",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "808 GXOOSE",
+    description: "Premium dark trap beats & production",
+  },
 };
 
 export default function RootLayout({
@@ -34,7 +57,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${dmSans.variable} ${ibmPlexMono.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
         {children}
       </body>
