@@ -1,199 +1,106 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-bg: #0a0a0a;
-  --color-surface: #111111;
-  --color-surface2: #1a1a1a;
-  --color-surface3: #222222;
-  --color-border: #2a2a2a;
-  --color-border-light: #333333;
-  --color-purple: #8b5cf6;
-  --color-purple-dim: #6d28d9;
-  --color-rose: #f43f5e;
-  --color-gold: #d4a024;
-  --color-gold-light: #fbbf24;
-  --color-text: #e5e5e5;
-  --color-text-sec: #a3a3a3;
-  --color-text-dim: #525252;
-  --font-display: var(--font-display);
-  --font-body: var(--font-body);
-  --font-mono: var(--font-mono);
+  --color-bg: #0e0c0a;
+  --color-surface: #181614;
+  --color-surface2: #211e1b;
+  --color-surface3: #2a2622;
+  --color-border: #332e28;
+  --color-border-light: #3d3730;
+  --color-rust: #d45a28;
+  --color-ember: #e8883a;
+  --color-molten: #ffaa44;
+  --color-spark: #ffd080;
+  --color-text: #ddd5c8;
+  --color-text-sec: #9c9488;
+  --color-text-dim: #6b6358;
+  --color-green-forge: #5aad66;
+  --color-yellow-warm: #c4a030;
+  --color-red-hot: #cc4433;
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-dm-sans);
+  --font-mono: var(--font-ibm-plex-mono);
 }
 
 * {
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
-  background: #0a0a0a;
-  color: #e5e5e5;
+  background: #0e0c0a;
+  color: #ddd5c8;
   font-family: var(--font-body), system-ui, sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
-/* Scrollbar */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #0e0c0a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
-  border-radius: 2px;
+  background: #332e28;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #333;
+  background: #3d3730;
 }
 
-/* Section number styling */
-.section-number {
-  font-family: var(--font-mono), monospace;
-  font-size: clamp(4rem, 10vw, 8rem);
-  font-weight: 700;
-  color: transparent;
-  -webkit-text-stroke: 1px #2a2a2a;
-  line-height: 1;
-  user-select: none;
+/* Tier dot glow */
+.tier-urgent {
+  box-shadow: 0 0 8px rgba(212, 90, 40, 0.6);
 }
 
-/* Marquee */
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.marquee-track {
-  animation: marquee 20s linear infinite;
-}
-.marquee-track:hover {
-  animation-play-state: paused;
+/* Progress bar gradient */
+.progress-bar {
+  background: linear-gradient(90deg, #d45a28, #e8883a);
 }
 
-/* Glow effects */
-.glow-purple {
-  text-shadow: 0 0 40px rgba(139, 92, 246, 0.3), 0 0 80px rgba(139, 92, 246, 0.1);
-}
-.glow-gold {
-  text-shadow: 0 0 30px rgba(212, 160, 36, 0.4);
+/* Molten gold glow */
+.molten-glow {
+  color: #ffaa44;
+  text-shadow: 0 0 20px rgba(255, 170, 68, 0.3);
 }
 
-/* Waveform animation */
-@keyframes waveform {
-  0%, 100% { height: 20%; }
-  50% { height: 100%; }
-}
-.waveform-bar {
-  animation: waveform 1.2s ease-in-out infinite;
-}
-
-/* Audio player */
-.audio-progress {
-  background: linear-gradient(90deg, #8b5cf6, #f43f5e);
-}
-
-/* Beat card */
-.beat-card {
-  background: #111111;
-  border: 1px solid #2a2a2a;
+/* Card hover */
+.forge-card {
+  background: #181614;
+  border: 1px solid #332e28;
   border-radius: 8px;
-  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  transition: border-color 0.2s;
 }
-.beat-card:hover {
-  border-color: #8b5cf6;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
+.forge-card:hover {
+  border-color: #3d3730;
 }
 
-/* Pulse ring */
-@keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(2.5); opacity: 0; }
-}
-.pulse-ring {
-  animation: pulse-ring 2s ease-out infinite;
-}
-
-/* Fade in on scroll */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-in {
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
-/* Grid noise overlay */
-.noise-overlay {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  pointer-events: none;
-}
-
-/* Tag pill */
-.tag-pill {
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  color: #a78bfa;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* License badge */
-.license-badge {
-  background: rgba(244, 63, 94, 0.1);
-  border: 1px solid rgba(244, 63, 94, 0.2);
-  color: #fb7185;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* CTA button */
-.btn-primary {
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+/* Button styles */
+.btn-rust {
+  background: #d45a28;
   color: #fff;
-  padding: 12px 28px;
+  padding: 10px 20px;
   border-radius: 6px;
   font-weight: 600;
-  transition: all 0.3s;
+  transition: background 0.2s;
   border: none;
   cursor: pointer;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
-.btn-primary:hover {
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
-  box-shadow: 0 4px 24px rgba(139, 92, 246, 0.4);
-  transform: translateY(-1px);
+.btn-rust:hover {
+  background: #e8883a;
 }
 
 .btn-outline {
   background: transparent;
-  color: #e5e5e5;
-  padding: 12px 28px;
+  color: #ddd5c8;
+  padding: 10px 20px;
   border-radius: 6px;
   font-weight: 600;
-  border: 1px solid #2a2a2a;
+  border: 1px solid #332e28;
   cursor: pointer;
-  transition: all 0.3s;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  transition: border-color 0.2s, background 0.2s;
 }
 .btn-outline:hover {
-  border-color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.05);
+  border-color: #3d3730;
+  background: #211e1b;
 }
