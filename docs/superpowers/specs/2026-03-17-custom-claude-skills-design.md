@@ -18,7 +18,7 @@ Five standalone Claude Code skills for repeated solo-developer workflows. Each s
 
 ### What it does
 
-Runs a read-only, structured audit across 8 categories. Produces both a terminal summary and a written `AUDIT-REPORT.md`.
+Runs a read-only, structured audit across 10 categories. Produces both a terminal summary and a written `AUDIT-REPORT.md`.
 
 ### Audit Categories
 
@@ -29,9 +29,11 @@ Runs a read-only, structured audit across 8 categories. Produces both a terminal
 | 3 | Rate Limiting | API routes for rate-limit guards |
 | 4 | Input Validation | API routes for Zod/schema validation on request bodies |
 | 5 | Environment Variables | `.env` gitignored, no hardcoded secrets, `process.env` references have fallbacks |
-| 6 | Dependencies | `npm audit`, outdated packages |
+| 6 | Dependencies | `npm audit` / `pnpm audit` / `yarn audit` (auto-detect from lockfile), outdated packages |
 | 7 | Error Handling | Error boundaries, try/catch in API routes, no leaked stack traces |
 | 8 | Security Headers | CSP, X-Frame-Options in middleware or next.config |
+| 9 | CORS | API routes serving public data have correct CORS config |
+| 10 | Service-Role Key Exposure | `SUPABASE_SERVICE_ROLE_KEY` not referenced in client components or `NEXT_PUBLIC_` vars |
 
 ### Output
 
@@ -68,10 +70,13 @@ Adds a complete Supabase SSR auth flow with zinc/slate dark-themed UI.
 
 ### Behavior
 
+- Detects project structure: `src/app/` vs `app/` vs Pages Router — adapts file paths accordingly. Assumes App Router; does not support Pages Router (warns and exits)
 - Checks if `@supabase/supabase-js` and `@supabase/ssr` are installed; installs if missing
+- If `supabase.ts` or `supabase-browser.ts` already exist, does NOT overwrite them — verifies existing clients support auth flow and only adds what is missing
 - Detects existing `middleware.ts` and merges rather than overwrites
 - Protected routes default to `/dashboard/*` but asks which routes to protect
-- Verifies `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` exist in `.env.local`
+- Verifies `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` exist in `.env.local`
+- If git history shows auth was previously removed, asks: "This project appears to have had auth removed. Are you sure you want to re-add it?"
 
 ### Dark Theme Defaults
 
@@ -85,7 +90,8 @@ Adds a complete Supabase SSR auth flow with zinc/slate dark-themed UI.
 
 - Warns if `middleware.ts` or `login/page.tsx` already exists before overwriting
 - Does not create Supabase project or run migrations — client-side setup only
-- Runs `npx tsc --noEmit` after to verify no type errors introduced
+- On partial failure, reports what was created/modified so user can manually revert
+- Runs `npm run build` after to verify no type errors introduced (avoids `tsc --noEmit` + `incremental` conflicts)
 
 ---
 
@@ -107,9 +113,11 @@ Takes old/new company name (+ optional tagline), performs full text and file ren
    - `old-name` → `new-name` (kebab-case)
    - `OLD_NAME` → `NEW_NAME` (screaming snake)
    - `oldName` → `newName` (camelCase)
+   - `OldName` → `NewName` (PascalCase — component names, types, classes)
 5. **File renames** — rename logo/favicon files containing old name, update all references
-6. **Targeted files** — `package.json` (name, description), `README.md`, `<title>` tags, meta tags, `manifest.json`, footer text
-7. **Verification** — grep for remaining occurrences, report stragglers
+6. **Targeted files** — `package.json` (name, description), `README.md`, `<title>` tags, meta tags, `manifest.json`, `.env.example`, `vercel.json`, `docker-compose.yml`, footer text
+7. **Migration warning** — if old name appears in `supabase/migrations/` files, warn that these may require a manual database migration
+8. **Verification** — grep for remaining occurrences, report stragglers
 
 ### Guardrails
 
@@ -117,7 +125,7 @@ Takes old/new company name (+ optional tagline), performs full text and file ren
 - Shows diff preview before applying — no silent changes
 - Skips binary files for text replacement
 - Warns if old name appears in env var values (may be external API keys)
-- Runs `npx tsc --noEmit` after to catch broken imports from file renames
+- Runs `npm run build` after to catch broken imports from file renames
 
 ---
 
@@ -132,19 +140,20 @@ Runs a pre-deploy validation pipeline, handles git, and deploys to Vercel produc
 ### Process
 
 1. **Pre-flight checks:**
-   - `npx tsc --noEmit` — type check
-   - `npm run build` — production build
+   - `npm run build` — production build (includes type checking)
    - `npm run lint` (if script exists) — linting
    - Fails fast on any error
 2. **Git stage:**
    - Check for uncommitted changes
-   - If dirty: stage, commit with descriptive message, push
+   - If dirty: show `git diff --stat`, ask user for confirmation, then stage specific files (never `git add -A`), commit, push
    - If clean: push if behind remote
 3. **Deploy:**
    - `vercel --prod --yes`
    - Capture and display production URL
+   - Note: Vercel runs its own build remotely — the local pre-flight build is for early error detection
 4. **Post-deploy:**
    - Display deployment URL
+   - Remind user: if issues arise, run `vercel rollback` to restore previous deployment
    - Suggest `audit-project` if not run recently
 
 ### Guardrails
@@ -153,7 +162,7 @@ Runs a pre-deploy validation pipeline, handles git, and deploys to Vercel produc
 - Refuses to deploy if `tsc` or `build` fails — no override
 - Never force-pushes
 - Warns if deploying from a branch other than `main`
-- Checks required env vars are set in Vercel (compares `.env.local` keys vs `vercel env ls`)
+- Checks required env vars are set in Vercel (compares `.env.local` keys vs `vercel env ls`). If `vercel env ls` fails (project not linked or not authenticated), warns but does not block deployment
 
 ---
 
@@ -179,11 +188,13 @@ Everything from Mode A, plus:
 
 | File | Purpose |
 |------|---------|
-| `src/app/widget/chat/page.tsx` | Standalone chat UI (dark zinc theme, message bubbles, input bar) |
-| `src/app/api/chat/route.ts` | Anthropic streaming endpoint with `@anthropic-ai/sdk` |
+| `src/app/widget/chat/page.tsx` | Standalone chat UI (dark zinc theme, message bubbles, input bar). Sets `X-Frame-Options: SAMEORIGIN` to allow iframe embedding from same origin |
+| `src/app/api/widget-chat/route.ts` | Anthropic streaming endpoint using SDK `stream()` method, returns `ReadableStream` with `text/event-stream` content type |
 
+- If `src/app/api/chat/route.ts` already exists, uses `widget-chat` path to avoid conflicts
+- Detects project structure: `src/app/` vs `app/` and adapts paths
 - Uses project's existing Anthropic SDK if installed; installs if not
-- Asks for the system prompt to use
+- Asks for the system prompt to use — stores it in `process.env.CHAT_WIDGET_SYSTEM_PROMPT` (added to `.env.local`)
 
 ### ChatWidget Component Spec
 
@@ -199,9 +210,18 @@ Everything from Mode A, plus:
 - Validates chat URL is reachable (URL-only mode)
 - API route includes rate limiting pattern from existing `rate-limit.ts` if present
 - Never hardcodes API keys — uses `process.env.ANTHROPIC_API_KEY`
-- Runs `npx tsc --noEmit` after to verify no type errors
+- On partial failure, reports what was created/modified so user can revert
+- Runs `npm run build` after to verify no type errors
 
 ---
+
+## Cross-Cutting Concerns
+
+- **Project structure detection:** All skills that create files must detect `src/app/` vs `app/` vs Pages Router and adapt paths. Skills assume App Router; warn and exit if Pages Router is detected.
+- **Type checking:** Use `npm run build` instead of `npx tsc --noEmit` to avoid `incremental` flag conflicts common in Next.js `tsconfig.json`.
+- **Confirmation protocol:** `rebrand` and `deploy-vercel` require explicit user confirmation before changes. `add-auth` and `add-chat-widget` warn on conflicts and ask before overwriting. `audit-project` is read-only and needs no confirmation.
+- **Partial failure handling:** Skills that create multiple files report what was created/modified on failure so the user can manually revert.
+- **Versioning:** Each SKILL.md includes a version comment at the top (`<!-- v1.0.0 2026-03-17 -->`) for tracking deployed versions.
 
 ## Architecture Decisions
 
